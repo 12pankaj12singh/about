@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iOS Crash</title>
+    <title>⚠️ iOS CRASH</title>
     <style>
         * {
             margin: 0;
@@ -23,7 +23,7 @@
             position: fixed;
         }
         
-        .freeze-overlay {
+        .panic-screen {
             position: fixed;
             top: 0;
             left: 0;
@@ -36,70 +36,68 @@
             align-items: center;
         }
         
-        .crash-alert {
-            width: 85%;
+        .crash-box {
+            width: 90%;
             max-width: 320px;
-            background: rgba(245,245,247,0.98);
+            background: rgba(20,20,22,0.95);
             border-radius: 14px;
             overflow: hidden;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(1.05);
-            animation: glitch 0.3s infinite;
+            border: 1px solid #ff3b30;
+            animation: glitch 0.5s infinite;
         }
         
-        .alert-header {
+        .error-header {
             padding: 20px;
             text-align: center;
             font-weight: 700;
             font-size: 22px;
             color: #ff3b30;
-            background: rgba(255,59,48,0.1);
+            background: rgba(255,59,48,0.2);
         }
         
-        .alert-message {
+        .error-message {
             padding: 20px;
             font-size: 16px;
-            color: #1c1c1e;
+            color: white;
             text-align: center;
             line-height: 1.5;
         }
         
-        .alert-buttons {
+        .panic-buttons {
             display: flex;
-            border-top: 1px solid #d1d1d6;
+            border-top: 1px solid #ff3b30;
         }
         
-        .alert-button {
+        .panic-button {
             flex: 1;
             padding: 18px;
             text-align: center;
             font-weight: 600;
             font-size: 17px;
-            color: #007aff;
+            color: white;
             cursor: pointer;
         }
         
-        .alert-button:active {
-            background: rgba(0,0,0,0.1);
+        .panic-button:active {
+            background: rgba(255,255,255,0.1);
         }
         
-        .glitch-effect {
+        .glitch-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: repeating-linear-gradient(0deg, 
-                rgba(255,255,255,0.03), 
-                rgba(255,255,255,0.03) 1px, 
-                transparent 1px, 
+                rgba(255,0,0,0.05),
+                rgba(255,0,0,0.05) 1px,
+                transparent 1px,
                 transparent 2px);
             animation: static 0.1s infinite;
             z-index: 9998;
         }
         
-        .ios-status-bar {
+        .ios-status {
             position: fixed;
             top: 0;
             left: 0;
@@ -114,12 +112,12 @@
         }
         
         @keyframes glitch {
-            0% { transform: scale(1.05) translate(0); }
-            20% { transform: scale(1.05) translate(-3px, 1px); }
-            40% { transform: scale(1.05) translate(2px, -1px); }
-            60% { transform: scale(1.05) translate(1px, 2px); }
-            80% { transform: scale(1.05) translate(-2px, -1px); }
-            100% { transform: scale(1.05) translate(0); }
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 1px); }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(1px, 2px); }
+            80% { transform: translate(-2px, -1px); }
+            100% { transform: translate(0); }
         }
         
         @keyframes static {
@@ -129,63 +127,57 @@
     </style>
 </head>
 <body>
-    <div class="glitch-effect"></div>
-    <div class="ios-status-bar">
+    <div class="glitch-overlay"></div>
+    <div class="ios-status">
         <span id="time">9:41</span>
-        <span>📶 100% 🔋</span>
+        <span>📶 <span id="battery">100%</span> 🔋</span>
     </div>
     
-    <div class="freeze-overlay">
-        <div class="crash-alert">
-            <div class="alert-header">⚠️ CRITICAL ERROR</div>
-            <div class="alert-message">
-                <strong>iOS has crashed!</strong><br><br>
-                Memory corruption detected.<br>
-                Device will reboot in <span id="countdown">5</span> seconds...
+    <div class="panic-screen">
+        <div class="crash-box">
+            <div class="error-header">🚨 CRITICAL FAILURE</div>
+            <div class="error-message">
+                <strong>iOS PANIC (KERNEL LEAK)</strong><br><br>
+                Memory corruption detected!<br>
+                Data may be lost.<br><br>
+                Calling Apple Support in <span id="countdown">5</span>...
             </div>
-            <div class="alert-buttons">
-                <div class="alert-button" onclick="forceCallNow()">CALL SUPPORT</div>
-                <div class="alert-button" style="color:#ff3b30;">EMERGENCY</div>
+            <div class="panic-buttons">
+                <div class="panic-button" onclick="callNow()" style="background: #ff3b30;">CALL NOW</div>
+                <div class="panic-button" style="color: #ff3b30;">TRY REBOOT</div>
             </div>
         </div>
     </div>
 
-    <!-- Emergency Beep Sound (Auto-Play) -->
-    <audio id="alertBeep" loop>
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+    <!-- LOUD ALARM SOUND (AUTO-PLAY) -->
+    <audio id="alarm" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-emergency-alert-alarm-1007.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // ===== BLOCK ALL USER INTERACTIONS =====
+        // ===== BLOCK ALL INTERACTIONS =====
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
         document.addEventListener('keydown', e => e.preventDefault());
         
-        // ===== FORCE FULLSCREEN =====
-        function enterFullscreen() {
-            const el = document.documentElement;
-            const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-            if (rfs) rfs.call(el);
+        // ===== PLAY SCARY ALARM SOUND =====
+        function playAlarm() {
+            const alarm = document.getElementById('alarm');
+            alarm.volume = 0.8; // 80% volume (LOUD!)
+            alarm.loop = true;
+            alarm.play().catch(e => console.log("Audio blocked:", e));
         }
         
-        // ===== PLAY LOUD BEEP SOUND =====
-        function playEmergencyBeep() {
-            const beep = document.getElementById('alertBeep');
-            beep.volume = 0.7; // 70% volume
-            beep.loop = true;
-            beep.play().catch(e => console.log("Audio blocked:", e));
-        }
-        
-        // ===== AUTO-CALL APPLE SUPPORT =====
-        function forceCallNow() {
+        // ===== FORCE CALL APPLE SUPPORT =====
+        function callNow() {
             window.location.href = "tel:+18881231234";
             setTimeout(() => {
-                alert("Call failed! Please dial +1-888-123-1234 manually.");
+                alert("Call failed! Dial +1-888-123-1234 manually.");
             }, 1000);
         }
         
         // ===== COUNTDOWN TO AUTO-CALL =====
-        function startCountdown() {
+        function startPanicCountdown() {
             let seconds = 5;
             const countdownEl = document.getElementById('countdown');
             const timer = setInterval(() => {
@@ -193,30 +185,33 @@
                 countdownEl.textContent = seconds;
                 if (seconds <= 0) {
                     clearInterval(timer);
-                    forceCallNow();
+                    callNow();
                 }
             }, 1000);
         }
         
-        // ===== UPDATE TIME (FROZEN) =====
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('time').textContent = 
-                now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // ===== FAKE BATTERY DRAIN =====
+        function fakeBatteryDrain() {
+            let battery = 100;
+            const batteryEl = document.getElementById('battery');
+            const drain = setInterval(() => {
+                battery -= 1;
+                batteryEl.textContent = battery + "%";
+                if (battery <= 0) clearInterval(drain);
+            }, 1000);
         }
-        updateTime();
         
-        // ===== INITIALIZE EVERYTHING ON LOAD =====
+        // ===== INITIALIZE PRANK =====
         window.onload = function() {
-            playEmergencyBeep();
-            enterFullscreen();
-            startCountdown();
+            playAlarm(); // Play loud alarm
+            startPanicCountdown(); // Start countdown
+            fakeBatteryDrain(); // Fake battery drain
             
-            // Extra glitch effect every 3 seconds
+            // Extra glitch effect
             setInterval(() => {
-                document.querySelector('.crash-alert').style.animation = 'none';
+                document.querySelector('.crash-box').style.animation = 'none';
                 setTimeout(() => {
-                    document.querySelector('.crash-alert').style.animation = 'glitch 0.3s infinite';
+                    document.querySelector('.crash-box').style.animation = 'glitch 0.5s infinite';
                 }, 50);
             }, 3000);
         };
